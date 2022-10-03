@@ -276,4 +276,147 @@ class Polynomial {
     	    e.printStackTrace();
     	}
     }
+
+    public static void main(String[] args){
+        File pol_file = new File("/Users/yfchoco/Downloads/test_pol.txt");
+        String pol = "";
+        try{
+            Scanner scanner = new Scanner(pol_file);
+            while(scanner.hasNext()) {
+                pol += scanner.next();
+            }
+        }
+        catch (FileNotFoundException e){
+            e.printStackTrace();
+        }
+        //System.out.println(pol_test);
+
+        //String pol = "-4.0+x+50x-3x10+10x20+x2-210x+3";
+        String[] pol_parts = pol.split("");
+        String x = pol_parts[1];
+        String plus = pol_parts[2];
+        String minus = pol_parts[6];
+
+        
+        double[] coefs = new double[pol_parts.length];
+        int[] pows = new int[pol_parts.length];
+        int idx=0;
+        int count_coef=0;  
+        int count_pow=0;
+        int[] pow_a_idx = new int[2];
+        double[] coef_a_idx = new double[2];
+
+        while(idx<pol_parts.length){
+            if(!pol_parts[idx].equals("x")){
+                coef_a_idx = get_coef(pol_parts, idx);
+                coefs[count_coef] = coef_a_idx[0];
+                count_coef++;
+                if((int)coef_a_idx[1] < pol_parts.length && !pol_parts[(int)coef_a_idx[1]].equals("x")){
+                    pows[count_pow] = 0;
+                    count_pow++;
+                }
+                else if((int)coef_a_idx[1] == pol_parts.length){
+                    pows[count_pow] = 0;
+                }
+                idx = (int)coef_a_idx[1];
+            }
+            else{
+                if(idx==0){
+                    coefs[count_coef] = 1;
+                    count_coef++;
+                }
+                pow_a_idx = get_pow(pol_parts, idx);
+                pows[count_pow] = pow_a_idx[0];
+                count_pow++;
+                idx = (int)pow_a_idx[1];
+            }
+        }
+        for(int i=0; i<pows.length; i++){
+            System.out.println(pows[i]);
+            System.out.println(coefs[i]);
+        }
+
+        String pol_string = "";
+        double[] coef = {-4,1,50,-3,10,1,-210,3};
+        int[] pow = {0,1,1,10,20,2,1,0};
+        int i=0;
+        while(i<coef.length){
+            if(coef[i]>0 && i!=0){
+                pol_string += "+";
+            }
+            if(coef[i] != 1){
+                pol_string += String.valueOf(coef[i]);
+            }
+            if(pow[i]==0){
+                i++;
+            }
+            else if(pow[i]==1){
+                pol_string += "x";
+                i++;
+            }
+            else{
+                pol_string += "x";
+                pol_string += String.valueOf(pow[i]);
+                i++;
+            }
+        }
+        System.out.println(pol_string);
+
+        Polynomial p = new Polynomial(pol_file);
+        double tot = p.evaluate(2);
+        System.out.println(tot);
+        double[] c = {0,1,2,3,4};
+        int[] po = {0,1,2,3,4};
+        Polynomial p2 = new Polynomial(c, po);
+        p2.saveToFile("/Users/yfchoco/Downloads/test_pol.txt");
+    }
 }
+
+    
+
+    
+
+    class Polynomial {
+    double[] polynomial;
+
+    Polynomial() {
+        double[] zero = {0};
+        polynomial = zero;
+    }
+    Polynomial(double[] pol) {
+        polynomial = pol;
+    }
+    Polynomial add(Polynomial pol){
+        int longer = Math.max(this.polynomial.length, pol.polynomial.length);
+        double[] zeros = new double[longer];
+        Polynomial newpol = new Polynomial(zeros);
+        for(int i=0; i< this.polynomial.length; i++){
+            newpol.polynomial[i] += this.polynomial[i];
+        }
+        for(int i=0; i< pol.polynomial.length; i++){
+            newpol.polynomial[i] += pol.polynomial[i];
+        }
+        return newpol;
+    }
+
+    double evaluate(double x){
+        double total = 0;
+        for(int i=0; i< this.polynomial.length; i++){
+            total += this.polynomial[i]*(Math.pow(x,i));
+        }
+        return total;
+    }
+ 
+    boolean hasRoot(double root){
+        return this.evaluate(root) == 0;
+    }
+}
+
+
+
+
+
+
+
+
+
