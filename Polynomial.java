@@ -28,7 +28,7 @@ public class Polynomial {
 	public double evaluate(double x) {
 		double total = 0;
 		for (int i = 0; i < this.coeffs.length; i++) {
-			double part_sum = x;
+			double part_sum = 1;
 			for (int j = 0; j < i; j++) {
 				part_sum *= x;
 			}
